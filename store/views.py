@@ -1,4 +1,4 @@
-from .models import Product
+from .models import Collection, Product
 from .serializers import ProductSerializer
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
@@ -11,20 +11,19 @@ from rest_framework import status
 def product_list(request):
     # queryset = Product.objects.all()
     queryset = Product.objects.select_related('collection').all()
-    serializer = ProductSerializer(queryset, many=True)
+    serializer = ProductSerializer(
+        queryset, many=True, context={'request': request})
     # usar Response en vez de return hace uso de la Browsable API qui muestra la url con mas cosas
     return Response(serializer.data)
 
 
 @api_view()
-def product_details(request, id):
+def product_detail(request, id):
     product = get_object_or_404(Product, pk=id)
     serializer = ProductSerializer(product)
     return Response(serializer.data)
 
-    # try:
-    #     product = Product.objects.get(pk=id)
-    #     serializer = ProductSerializer(product)
-    #     return Response(serializer.data)
-    # except Product.DoesNotExist:
-    #     return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view()
+def collection_detail(request, pk):
+    return Response("ok")
