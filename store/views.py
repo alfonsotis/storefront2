@@ -9,7 +9,8 @@ from rest_framework import status
 
 @api_view()  # remplaza el REST de django por el REST de rest_framework que es mas poderoso
 def product_list(request):
-    queryset = Product.objects.all()
+    # queryset = Product.objects.all()
+    queryset = Product.objects.select_related('collection').all()
     serializer = ProductSerializer(queryset, many=True)
     # usar Response en vez de return hace uso de la Browsable API qui muestra la url con mas cosas
     return Response(serializer.data)
