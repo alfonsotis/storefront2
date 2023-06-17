@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from decimal import Decimal
 from .models import Collection
-
+from django.db.models.aggregates import Count
 from store.models import Product
 
 # https://www.django-rest-framework.org/
@@ -13,10 +13,20 @@ from store.models import Product
 # hyperlink
 
 
-class CollectionSerializer(serializers.Serializer):
+class CollectionSerializer(serializers.ModelSerializer):
+    # id = serializers.IntegerField()
+    # title = serializers.CharField(max_length=255)
     class Meta:
         model = Collection
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'products_count']
+
+    products_count = serializers.IntegerField()
+
+    # product_count = serializers.SerializerMethodField(method_name="get_count")
+
+    # def get_count(self, collection):
+    #     queryset = Product.objects.filter(collection=collection.id).count()
+    #     return queryset
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -31,14 +41,3 @@ class ProductSerializer(serializers.ModelSerializer):
     def calculate_tax(self, product):
         request = self.context.get('request')
         return product.unit_price * Decimal(1.1)
-
-    # def create(self, validated_data):
-    #     product = Product(**validated_data)
-    #     product.other = 1
-    #     product.save()
-    #     return product
-
-    # def update(self, instance, validated_data):
-    #     instance.unit_price = validated_data.get('unit_price')
-    #     instance.save()
-    #     return instance
