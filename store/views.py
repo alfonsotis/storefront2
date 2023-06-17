@@ -7,14 +7,21 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-@api_view()  # remplaza el REST de django por el REST de rest_framework que es mas poderoso
+# remplaza el REST de django por el REST de rest_framework que es mas poderoso
+@api_view(['GET', 'POST'])
 def product_list(request):
-    # queryset = Product.objects.all()
-    queryset = Product.objects.select_related('collection').all()
-    serializer = ProductSerializer(
-        queryset, many=True, context={'request': request})
-    # usar Response en vez de return hace uso de la Browsable API qui muestra la url con mas cosas
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = Product.objects.select_related('collection').all()
+        serializer = ProductSerializer(
+            queryset, many=True, context={'request': request})
+        # usar Response en vez de return hace uso de la Browsable API qui muestra la pagina con informacion sobre la requete
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = ProductSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response("ok")
 
 
 @api_view()
