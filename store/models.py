@@ -20,7 +20,7 @@ class Collection(models.Model):
 
 
 class Product(models.Model):
-    
+
     title = models.CharField(max_length=255)
     slug = models.SlugField()
     description = models.TextField(null=True, blank=True)
@@ -105,3 +105,9 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.Case, related_name='reviews')
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    date = models.DateField(auto_now=True)
