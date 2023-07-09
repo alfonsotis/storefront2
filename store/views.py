@@ -3,12 +3,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models.aggregates import Count
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.pagination import PageNumberPagination
 from .pagination import DefaultPagination
 from .filters import ProductFilter
-from .models import Collection, OrderItem, Product, Review
-from .serializers import CollectionSerializer, ProductSerializer, ReviewSerializer
+from .models import Cart, CartItem, Collection, OrderItem, Product, Review
+from .serializers import CartItemSerializer, CartSerializer, CollectionSerializer, ProductSerializer, ReviewSerializer
+
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
@@ -18,7 +21,7 @@ class ProductViewSet(ModelViewSet):
     pagination_class = DefaultPagination
     search_fields = ['title', 'description']
     ordering_fields = ['unit_price', 'last_update']
-    
+
     def get_serializer_context(self):
         return {'request': self.request}
 
@@ -27,6 +30,7 @@ class ProductViewSet(ModelViewSet):
             return Response({'error': 'Product cannot be deleted because it is associated\
                               with an oreder item.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
+
 
 class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.annotate(
@@ -39,7 +43,8 @@ class CollectionViewSet(ModelViewSet):
             return Response({'error': 'Collection cant be deleted because it\'s \
                              associated with products'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
-    
+
+
 class ReviewViewSet(ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
@@ -48,5 +53,23 @@ class ReviewViewSet(ModelViewSet):
         return Review.objects.filter(product_id=self.kwargs['product_pk'])
 
     def get_serializer_context(self):
-        return {'product_id': self.kwargs['product_pk'] }
+        return {'product_id': self.kwargs['product_pk']}
 
+
+class CartViewSet(CreateModelMixin,
+                  RetrieveModelMixin,
+                  GenericViewSet,
+                  DestroyModelMixin):
+    queryset = Cart.objects.prefetch_related('items__product').all()
+    serializer_class = CartSerializer
+
+
+class CartItemViewSet(ModelViewSet):
+    serializer_class = CartItemSerializer
+    # queryset = CartItem.objects.all()
+
+    def get_queryset(self):
+        return CartItem.objects.filter(cart_id=self.kwargs['cart_pk']).select_related('product')
+
+    # def get_serializer_context(self):
+    #     return {'cart_id': self.kwargs['cart_pk']}

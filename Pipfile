@@ -12,6 +12,7 @@ drf-nested-routers = "*"
 django-filter = "*"
 
 [dev-packages]
+mypy = "*"
 
 [requires]
 python_version = "3.9"
