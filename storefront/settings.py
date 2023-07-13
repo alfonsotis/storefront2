@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -149,16 +150,27 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.AllowAny'
+        # 'rest_framework.permissions.IsAuthenticated'
+    ]
 }
-
-SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('JWT',),
-}
-
 
 
 DJOSER = {
-    'SERIALIZERS':{
-        'user_create': 'core.serializers.UserCreateSerializer'
+    'SERIALIZERS': {
+        'user_create': 'core.serializers.UserCreateSerializer',
+        'current_user': 'core.serializers.UserSerializer'
     }
 }
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=150)
+}
+
+# {
+#     "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY4OTA5MDUwOCwiaWF0IjoxNjg5MDA0MTA4LCJqdGkiOiJhMzUwYjk3ODZhZDI0NmI5YTMxMzM1YWE5YWU3ZDhhYiIsInVzZXJfaWQiOjN9.hrp6VyFiearffQjsvSNHM9CCYNImXEDhtH2ZyBUNS_U",
+#     "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg5MDkwNTA4LCJpYXQiOjE2ODkwMDQxMDgsImp0aSI6IjFiNDU1YjEzMWJiNDQ0OTFiYzU1YmRiOTY0YjZlN2ZjIiwidXNlcl9pZCI6M30.WuuTh5Rc2cWCmdTAV7w8UmnS7wamS3PayH20_AEQZ6E"
+# }
