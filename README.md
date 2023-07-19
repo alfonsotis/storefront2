@@ -1,15 +1,18 @@
-## Storefront2 est le backend d'une page de e-comerce développé avec Django.
+
+## Storefront2 est le backend d'une page de e-commerce développé avec Django.
 
 ## Dans ce projet vous pouvez trouver:
 
-## - la modelisation des donnees
+## - la modélisation des données
 
 ## - La customisation de la page Admin
 
-## - La creation des views endpoints
+## - Les migrations
 
-## - La securisation des api endpoints
+## - La création des views endpoints
+
+## - La sécurisation des api endpoints
 
 ## - L'administration des utilisateurs
 
-## - Le traitment de signals et plus ...
+## - Le traitement de signaux et plus ...
